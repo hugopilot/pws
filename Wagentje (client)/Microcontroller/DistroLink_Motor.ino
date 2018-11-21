@@ -1,3 +1,7 @@
+/* Written by Hugo Woesthuis and Mike Krop
+ * Licensed under GPLv3, see LICENSE file for more info.
+ */
+
 #include <Wire.h>
 #include "Motor.h"
 
