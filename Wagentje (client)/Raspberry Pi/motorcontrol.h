@@ -14,6 +14,8 @@
 #define EN "58"
 
 int exec_py_script(std::string path);
+void reset_mc();
+// Commands to be given to the handler
 enum command{
 	STOP,
 	SET_FULL_SPEED,

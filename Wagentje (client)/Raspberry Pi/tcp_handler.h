@@ -1,7 +1,8 @@
 /* Written by Hugo Woesthuis and Mike Krop
  * Licensed under the GPLv3 license
  */
-
+#ifndef TCPHANLDER_H
+#define TCPHANDLER_H
 #include <stdio.h>
 #include <iostream>
 #include <string>
@@ -27,3 +28,4 @@ class tcp_client{
 	bool connected;
 	
 };
+#endif
