@@ -26,10 +26,12 @@ enum command{
 	SHARP_TURN_LEFT,
 	SHARP_TURN_RIGHT,
 	DISABLE,
-	ENABLE
+	ENABLE,
+	IGNORE
 };
 class MotorController{
 public:
 	static void SendCommand(command _cmd, int address);
+	static command ConvertStringToCommand(std::string _string);
 };
 #endif

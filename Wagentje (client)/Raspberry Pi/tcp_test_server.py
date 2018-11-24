@@ -18,12 +18,8 @@ while True:
 		print >> sys.stderr, 'Connection from', client_address
 		
 		while True:
-			data = connection.recv(16);
-			print >> sys.stderr, 'Recieved "%s"' % data;
-			time.sleep(2);
-			connection.sendall('RECIEVED');
-			if data == "":
-				break;
+			connection.sendall('TESTALLPS');
+			time.sleep(100);
 	finally:
 		connection.close()
 		print 'connection terminated'

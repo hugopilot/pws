@@ -43,6 +43,9 @@ void MotorController::SendCommand(command _cmd, int address){
 		case ENABLE:
 			cmd = EN;
 			break;
+		default:
+			cmd = IGNORE;
+			break;
 	}
 	std::string space = " ";
 	std::string p = MOTORCOMMAND + space + std::to_string(address) + space + cmd;
@@ -61,4 +64,22 @@ void MotorController::SendCommand(command _cmd, int address){
 		count++;
 	}while(res != 0);
 	
+ }
+ command MotorController::ConvertStringToCommand(std::string _string){
+	if(_string == "FWD")
+		return GO_STRAIGHT;
+	else if(_string == "LFT")
+		return TURN_LEFT;
+	else if(_string == "RGHT")
+		return TURN_RIGHT;
+	else if(_string == "SLFT")
+		return SHARP_TURN_LEFT;
+	else if(_string == "SRGHT")
+		return SHARP_TURN_RIGHT;
+	else if(_string == "BCK")
+		return GO_BACK;
+	else if(_string == "STOP")
+		return STOP;
+	else
+		return IGNORE;
  }

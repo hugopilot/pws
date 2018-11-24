@@ -5,39 +5,39 @@
 #ifndef HOSTHANDLER_H
 #define HOSTHANDLER_H
 #include <iostream>
+#include "motorcontrol.h"
+#include <vector>
+
+struct step{
+	command dir;
+	long time;
+};
+struct ServerINF{
+	std::string IP;
+	std::string HSID;
+};
+struct position{	
+	// name of the position
+	std::string name;
+	// Time to Drive From Base
+	std::vector<step> tdfb;
+	// Time to Drive To Base
+	std::vector<step> tdtb;
+	
+};
 
 class host_handler{
 	public:
 	host_handler();
 	host_handler(std::string setting_dir);
-	void start();
+	void start(std::string IP, int port);
 	void stop();
 	private:
-	std::string settings_dir;
+	std::string pos_path;
+	std::string srv_path;
+	bool busy = false;
 	
 };
-
-struct position{
-	// Name of the position
-	std::string pos_name;
-	
-	// Time to Drive From the Beginning of the Lane;
-	int tdf_bLane;
-	
-	// Time to Drive From the End of the Lane
-	int tdf_eLane;
-	
-	// Time to drive after turning.
-	int tda_turn;
-};
-
-struct Lane{
-	bool isEndStation = false;
-	bool isBaseStation = false;
-	
-	position positions[];
-};
-
 
 #endif
 /* DLHCP (DistroLink Host-Client Protocol)
@@ -64,41 +64,41 @@ struct Lane{
  * After NOTG is sent, the client will listen till next packet is recieved. The following packet will need a list of positions.
  * Postitions are seperated though a comma. 
  * Example: 
- * A5, A6, A9, B1
+ * A5,A6,A9,B1
  * 
- * You can specify a different starting position, if it's specified in the Positions File
+ * You can specify a different starting position, if it's specified in the Positions File. Using FROM,<name>
  * Example:
- * A5, A6, A9, B1, FROM base_1
+ * FROM,base_1,A5,A6,A9,B1
  * 
  * A full example would be, base-to-base:
- * FROM base_1, A5, A6, A9, B1, base_1
+ * FROM,base_1,A5,A6,A9,B1,base_1
  * 
  * The client will take care of the movements.
  */
 
 /* Postition file orginisation:
  * Since the prototype relies on dead-reckoning, the postitions contain steps for the car to follow.
- * <Postitions>
+ * <Positions>
  * 		<Position name="A1">
  * 			<tdfb>
- * 				<step>FWD, 25000</step>
- * 				<step>LFT, 3000</step>
- * 				<step>FWD, 10000</step>
- * 				<step>SLFT, 1265</step>
- * 				<step>FWD, 5000</step>
+ * 				<step>FWD,25000</step>
+ * 				<step>LFT,3000</step>
+ * 				<step>FWD,10000</step>
+ * 				<step>SLFT,1265</step>
+ * 				<step>FWD,5000</step>
  * 				<step>STOP</step>
  * 			</tdfb>
  * 			<tdtb>
- * 				<step>BCK, 7000</step>
- * 				<step>SLFT, 1265</step>
- * 				<step>FWD, 12000</step>
- * 				<step>RGHT, 3000</step>
+ * 				<step>BCK,7000</step>
+ * 				<step>SLFT,1265</step>
+ * 				<step>FWD,12000</step>
+ * 				<step>RGHT,3000</step>
  * 				<step>STOP</step>
  * 			</tdtb>
  * 		</Postition>
- * </Positions> 
  * </Positions>
  * 
  * Server File:
- * IP 10.0.0.200
- * SID a3c2cfd243ac
+ * IP = 10.0.0.200
+ * SID = a3c2cfd243ac
+ */

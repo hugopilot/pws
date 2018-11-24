@@ -1,0 +1,19 @@
+<Positions>
+        <Position name="A1">
+                <tdfb>
+                        <step>FWD,2000</step>
+                        <step>LFT,3000</step>
+                        <step>FWD,2000</step>
+                        <step>SLFT,1265</step>
+                        <step>FWD,5000</step>
+                        <step>STOP</step>
+                </tdfb>
+                <tdtb>
+                        <step>BCK,3000</step>
+                        <step>SLFT,1265</step>
+                        <step>FWD,2000</step>
+                        <step>RGHT,3000</step>
+                        <step>STOP</step>
+                </tdtb>
+        </Postition>
+ </Positions>
