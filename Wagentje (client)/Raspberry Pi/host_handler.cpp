@@ -69,47 +69,42 @@ std::vector<position> ConvertXMLtoPositions(std::string pathtofile){
 			
 			// Loop though all step nodes
 			for(xml_node<> * stepf_node = tdfb_node->first_node("step"); stepf_node; stepf_node = stepf_node->next_sibling()){
-				
-				//Check if the node is part of tdfb
-				if(stepf_node->parent() == tdfb_node){
-					// Get the value of the node
-					ws = stepf_node->value();
-					step st;
+				// Get the value of the node
+				ws = stepf_node->value();
+				step st;
 					
-					// If cmd is 'STOP' break the loop
-					if(ws == "STOP"){
-						st.dir = STOP;
-						st.time = 5;
-						tdfb.push_back(st);
-						break;
-					}
-					// Split string into two parts
-					std::vector<std::string> values = SplitByComma(ws);
-			
-					st.dir = MotorController::ConvertStringToCommand(values[0]);
-					st.time = (long)std::stoi(values[1], &sz);
+				// If cmd is 'STOP' break the loop
+				if(ws == "STOP"){
+					st.dir = STOP;
+					st.time = 5;
 					tdfb.push_back(st);
+					break;
 				}
-				
-				if(stepf_node->parent() == tdtb_node){
-					// Get the value of the node
-					ws = stepf_node->value();
-					step st;
+				// Split string into two parts
+				std::vector<std::string> values = SplitByComma(ws);
+		
+				st.dir = MotorController::ConvertStringToCommand(values[0]);
+				st.time = (long)std::stoi(values[1], &sz);
+				tdfb.push_back(st);
+			}
+			for(xml_node<> * stepb_node = tdtb_node->first_node("bstep"); stepb_node; stepb_node = stepb_node->next_sibling()){
+				// Get the value of the node
+				ws = stepb_node->value();
+				step st;
 					
-					// If cmd is 'STOP' break the loop
-					if(ws == "STOP"){
-						st.dir = STOP;
-						st.time = 5;
-						tdfb.push_back(st);
-						break;
-					}
-					// Split string into two parts
-					std::vector<std::string> values = SplitByComma(ws);
-			
-					st.dir = MotorController::ConvertStringToCommand(values[0]);
-					st.time = (long)std::stoi(values[1], &sz);
+				// If cmd is 'STOP' break the loop
+				if(ws == "STOP"){
+					st.dir = STOP;
+					st.time = 5;
 					tdtb.push_back(st);
+					break;
 				}
+				// Split string into two parts
+				std::vector<std::string> values = SplitByComma(ws);
+		
+				st.dir = MotorController::ConvertStringToCommand(values[0]);
+				st.time = (long)std::stoi(values[1], &sz);
+				tdtb.push_back(st);
 			}
 		posi.tdtb = tdtb;
 		posi.tdfb = tdfb;

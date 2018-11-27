@@ -9,11 +9,11 @@
                         <step>STOP</step>
                 </tdfb>
                 <tdtb>
-                        <step>BCK,3000</step>
-                        <step>SLFT,1265</step>
-                        <step>FWD,2000</step>
-                        <step>RGHT,3000</step>
-                        <step>STOP</step>
+                        <bstep>BCK,3000</sbtep>
+                        <bstep>SLFT,1265</bstep>
+                        <bstep>FWD,2000</bstep>
+                        <bstep>RGHT,3000</bstep>
+                        <bstep>STOP</bstep>
                 </tdtb>
         </Position>
  </Positions>
