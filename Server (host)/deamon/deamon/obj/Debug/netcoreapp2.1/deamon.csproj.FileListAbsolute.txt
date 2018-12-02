@@ -1,0 +1,11 @@
+E:\pws\pws\Server (host)\deamon\deamon\obj\Debug\netcoreapp2.1\deamon.csprojAssemblyReference.cache
+E:\pws\pws\Server (host)\deamon\deamon\obj\Debug\netcoreapp2.1\deamon.csproj.CoreCompileInputs.cache
+E:\pws\pws\Server (host)\deamon\deamon\obj\Debug\netcoreapp2.1\deamon.AssemblyInfoInputs.cache
+E:\pws\pws\Server (host)\deamon\deamon\obj\Debug\netcoreapp2.1\deamon.AssemblyInfo.cs
+E:\pws\pws\Server (host)\deamon\deamon\bin\Debug\netcoreapp2.1\deamon.deps.json
+E:\pws\pws\Server (host)\deamon\deamon\bin\Debug\netcoreapp2.1\deamon.runtimeconfig.json
+E:\pws\pws\Server (host)\deamon\deamon\bin\Debug\netcoreapp2.1\deamon.runtimeconfig.dev.json
+E:\pws\pws\Server (host)\deamon\deamon\bin\Debug\netcoreapp2.1\deamon.dll
+E:\pws\pws\Server (host)\deamon\deamon\bin\Debug\netcoreapp2.1\deamon.pdb
+E:\pws\pws\Server (host)\deamon\deamon\obj\Debug\netcoreapp2.1\deamon.dll
+E:\pws\pws\Server (host)\deamon\deamon\obj\Debug\netcoreapp2.1\deamon.pdb

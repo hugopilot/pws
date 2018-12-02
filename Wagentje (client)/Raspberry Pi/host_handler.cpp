@@ -13,6 +13,8 @@
 #define FILE_COUNT 2
 #define ROOTNODE_NAME "Positions"
 #define POSNODE_NAME "Position"
+#define I2C_ADDRESS 4
+
 using namespace rapidxml;
 void tSleep(long _milliseconds){
 	std::this_thread::sleep_for(std::chrono::milliseconds(_milliseconds));
@@ -112,7 +114,7 @@ std::vector<position> ConvertXMLtoPositions(std::string pathtofile){
 	}
 	return p;
 }
-void executemovements(position p, bool tdfb = true, int addr = 4){
+void executemovements(position p, bool tdfb = true, int addr = I2C_ADDRESS){
 	if(tdfb){
 		std::cout<<"Going from base to " << p.name << std::endl;
 		for(uint16_t i = 0; i < p.tdfb.size(); i++){
@@ -166,19 +168,29 @@ void TestAll(std::vector<position> alps){
 	}
 }
 
+void handshakeflow(tcp_client tcpc) {
+	if (!check_file_exists(srv_path)) {
+		tcpc.send_data("HDSERROR");
+		return;
+	}
+}
+
+
 // Listen to commands
 void CommandParser(tcp_client tcpc, std::vector<position> posiss){
+	// Strings can't be switched...so we use if and else statements
+	
 	bool busy = false;
 	std::string d = tcpc.receive_data(512);
-	if(d == "PAUSE")
-		MotorController::SendCommand(STOP, 4);
+	//if(d == "PAUSE")
+	//	MotorController::SendCommand(STOP, I2C_ADDRESS);
 	else if(d == "NOTG"){
 		if(busy){
 			tcpc.send_data("ERRBSY");
 			return;
 		}
 		busy = true;
-		// Give the OK command;
+		// Give the OK-response;
 		tcpc.send_data("OK");
 		// recieve the next packet
 		std::string pd = tcpc.receive_data(1024);
@@ -188,11 +200,11 @@ void CommandParser(tcp_client tcpc, std::vector<position> posiss){
 		
 		// Search and find all positions
 		std::vector<position> exec = FindAllPositionsByName(posis, posiss);
-		for(uint16_t d = 0; d < exec.size(); d++){
-			position ps = exec.at(d);
-			executemovements(ps, true, 4);
+		for(uint16_t c = 0; d < exec.size(); c++){
+			position ps = exec.at(c);
+			executemovements(ps, true, I2C_ADDRESS);
 			tSleep(5000);
-			executemovements(ps, false, 4);
+			executemovements(ps, false, I2C_ADDRESS);
 		}
 		busy = false;
 	}
@@ -205,14 +217,19 @@ void CommandParser(tcp_client tcpc, std::vector<position> posiss){
 		TestAll(posiss);
 		busy = false;
 	}
+	//else if (d == "RSME") {
+	//	MotorController::SendCommand();
+	//}
+	else if (d == "FLREBOOT") {
+		reset_mc();
+	}
+	else if (d == "INITHDSK") {
+		handshakeflow(tcpc);
+	}
 }
 
 
-
-
-
-
-
+// Class defintion
 void host_handler::start(std::string IP, int port){
 	// check if files are existent
 	if(!check_file_exists(srv_path)){

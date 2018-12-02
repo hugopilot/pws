@@ -46,19 +46,17 @@ class host_handler{
  * NOTG = 'New Order To Grab'. This commands instructs the client to get ready to recieve a new assignment.
  * RTB = Cancels any assignment and Return To Base
  * RSME = Resume operations after PAUSE command
- * GTEP = 'Go To End Point'
  * FLREBOOT = Resets both the microcontroller and the Raspberry Pi.
  * 
  * === HANDSHAKE FLOW === 
  * This flow describes the first connection setup.
- * 1. Server connects to client and sends the INITHDSK command.
- * 2. The client responds with a RDYFORHS 'Ready for handshake' or a HDSERROR 'Handshake error'
+ * 1. Client connects to server and sends the INITHDSK command.
+ * 2. Server sends IP for the file.
  * 3. In case RDYFORHS was recieved, the server sends his IP and handshake-id to the client
  * 4. If no errors occur the client sends a HDSKCMPT 'Handshake complete' command and stores the info on his drive in a file.
  * 
  * === COMMAND ARGUMENTS ===
  * NOTG = See NOTG DATA TFR
- * GTEP = Number of end point.
  * 
  * === NOTG DATA TFR ===
  * After NOTG is sent, the client will listen till next packet is recieved. The following packet will need a list of positions.
