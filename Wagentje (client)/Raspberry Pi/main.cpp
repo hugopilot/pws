@@ -5,5 +5,5 @@
 // SEND ASCII
 int main(int argc, char** argv){
 	host_handler host("/home/pi/Desktop/pws");
-	host.start("localhost", 5000);
+	host.start("10.0.0.117", 2121);
 }

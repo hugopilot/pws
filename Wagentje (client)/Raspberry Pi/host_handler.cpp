@@ -170,6 +170,7 @@ void TestAll(std::vector<position> alps){
 void CommandParser(tcp_client tcpc, std::vector<position> posiss){
 	bool busy = false;
 	std::string d = tcpc.receive_data(512);
+	std::cout<<"Recieved " << d;
 	if(d == "PAUSE")
 		MotorController::SendCommand(STOP, 4);
 	else if(d == "NOTG"){
@@ -196,14 +197,19 @@ void CommandParser(tcp_client tcpc, std::vector<position> posiss){
 		}
 		busy = false;
 	}
-	else if (d == "TESTALLPS"){
+	else if (d == "TESTALL"){
 		if(busy){
 			tcpc.send_data("ERRBSY");
 			return;
 		}
 		busy = true;
+		tcpc.send_data("OK");
 		TestAll(posiss);
 		busy = false;
+	}
+	else if(d == "FLREBOOT"){
+		system("sudo resetmicrocontroller.sh");
+		system("sudo reboot");
 	}
 }
 
@@ -236,6 +242,9 @@ void host_handler::start(std::string IP, int port){
 	if(!cl.init()){
 		return;
 	}
+	tSleep(500);
+	// Start handshake flow
+	cl.send_data("INITHDSK");
 	
 	// Start to listen
 	CommandParser(cl, positions);
