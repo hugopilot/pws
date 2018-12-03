@@ -237,6 +237,12 @@ void host_handler::start(std::string IP, int port){
 		return;
 	}
 	
+	// Start the handshake flow
+	cl.send_data("INITHDSK");
+	std::string response = cl.receive_data(512);
+	if(response == "HDSERROR"){ std::cout<<"ERROR: Server returned 'HANDSHAKE FAILED'!\n"; return;}
+	std::cout << "Server returned " << response <<"... continuing\n";
+	
 	// Start to listen
 	CommandParser(cl, positions);
 }
