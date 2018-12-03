@@ -1,25 +1,25 @@
-#!/usr/bin/env python
+import socket
+import sys
+import time
 
-from socket import *
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
 
-HOST = '10.0.0.117'
-PORT = 3001
-BUFSIZ = 1024
-ADDR = (HOST, PORT)
+srv_addr = ('localhost', 5000)
+print >> sys.stderr, 'starting server on %s, on port %s' % srv_addr;
+sock.bind(srv_addr);
 
-tcpSerSock = socket(AF_INET, SOCK_STREAM)
-tcpSerSock.bind(ADDR)
-tcpSerSock.listen(5)
-
-while 1:
-   print ('waiting for connection...')
-   tcpClisock, addr = tcpSerSock.accept()
-   print ('...connected from: ', addr)
-   
-   while 1:  
-      data = tcpCliSock.recv(BUFSIZ)
-      if not data: break
-      tcpCliSock.send('hello', data)
-
-   tcpCliSock.close()
-tcpSerSock.close() 
+sock.listen(1);
+print 'now listening'
+while True:
+	print >> sys.stderr, 'waiting for a connection'
+	connection, client_address = sock.accept()
+	
+	try:
+		print >> sys.stderr, 'Connection from', client_address
+		
+		while True:
+			connection.sendall('TESTALLPS');
+			time.sleep(100);
+	finally:
+		connection.close()
+		print 'connection terminated'

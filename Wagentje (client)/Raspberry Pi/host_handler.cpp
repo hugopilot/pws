@@ -13,8 +13,6 @@
 #define FILE_COUNT 2
 #define ROOTNODE_NAME "Positions"
 #define POSNODE_NAME "Position"
-#define I2C_ADDRESS 4
-
 using namespace rapidxml;
 void tSleep(long _milliseconds){
 	std::this_thread::sleep_for(std::chrono::milliseconds(_milliseconds));
@@ -114,7 +112,7 @@ std::vector<position> ConvertXMLtoPositions(std::string pathtofile){
 	}
 	return p;
 }
-void executemovements(position p, bool tdfb = true, int addr = I2C_ADDRESS){
+void executemovements(position p, bool tdfb = true, int addr = 4){
 	if(tdfb){
 		std::cout<<"Going from base to " << p.name << std::endl;
 		for(uint16_t i = 0; i < p.tdfb.size(); i++){
@@ -168,33 +166,19 @@ void TestAll(std::vector<position> alps){
 	}
 }
 
-void handshakeflow(tcp_client tcpc) {
-	if (!check_file_exists(srv_path)) {
-		tcpc.send_data("HDSERROR");
-		return;
-	}
-}
-
-
 // Listen to commands
 void CommandParser(tcp_client tcpc, std::vector<position> posiss){
-	// Strings can't be switched...so we use if and else statements
-	
 	bool busy = false;
 	std::string d = tcpc.receive_data(512);
-	std::cout<<"Recieved " << d;
 	if(d == "PAUSE")
 		MotorController::SendCommand(STOP, 4);
-
-	//if(d == "PAUSE")
-	//	MotorController::SendCommand(STOP, I2C_ADDRESS);
 	else if(d == "NOTG"){
 		if(busy){
 			tcpc.send_data("ERRBSY");
 			return;
 		}
 		busy = true;
-		// Give the OK-response;
+		// Give the OK command;
 		tcpc.send_data("OK");
 		// recieve the next packet
 		std::string pd = tcpc.receive_data(1024);
@@ -204,33 +188,31 @@ void CommandParser(tcp_client tcpc, std::vector<position> posiss){
 		
 		// Search and find all positions
 		std::vector<position> exec = FindAllPositionsByName(posis, posiss);
-		for(uint16_t c = 0; d < exec.size(); c++){
-			position ps = exec.at(c);
-			executemovements(ps, true, I2C_ADDRESS);
+		for(uint16_t d = 0; d < exec.size(); d++){
+			position ps = exec.at(d);
+			executemovements(ps, true, 4);
 			tSleep(5000);
-			executemovements(ps, false, I2C_ADDRESS);
+			executemovements(ps, false, 4);
 		}
 		busy = false;
 	}
-	else if (d == "TESTALL"){
+	else if (d == "TESTALLPS"){
 		if(busy){
 			tcpc.send_data("ERRBSY");
 			return;
 		}
 		busy = true;
-		tcpc.send_data("OK");
 		TestAll(posiss);
 		busy = false;
-	}
-	else if (d == "FLREBOOT"){
-		system("sudo resetmicrocontroller.sh");
-		tSleep(1000);
-		system("sudo reboot");
 	}
 }
 
 
-// Class defintion
+
+
+
+
+
 void host_handler::start(std::string IP, int port){
 	// check if files are existent
 	if(!check_file_exists(srv_path)){
@@ -254,11 +236,13 @@ void host_handler::start(std::string IP, int port){
 	if(!cl.init()){
 		return;
 	}
-	// start handshak flow
+	
+	// Handshake flow
 	cl.send_data("INITHDSK");
-	std::string hdreply = cl.receive_data(512);
-	std::cout<<hdreply;
-	if(hdreply == "HDSERROR"){ return; }
+	std::string response = cl.receive_data(512);
+	if(response == "HSKERROR"){std::cout<<"ERROR: Server returned handshake-error\n"; return;}
+	std::cout << "Received " << response << "from server\n";
+	
 	// Start to listen
 	CommandParser(cl, positions);
 }
