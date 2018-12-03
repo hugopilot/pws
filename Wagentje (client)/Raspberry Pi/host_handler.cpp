@@ -222,14 +222,10 @@ void CommandParser(tcp_client tcpc, std::vector<position> posiss){
 		TestAll(posiss);
 		busy = false;
 	}
-	else if(d == "FLREBOOT"){
+	else if (d == "FLREBOOT"){
 		system("sudo resetmicrocontroller.sh");
+		tSleep(1000);
 		system("sudo reboot");
-	//else if (d == "RSME") {
-	//	MotorController::SendCommand();
-	//}
-	else if (d == "FLREBOOT") {
-		reset_mc();
 	}
 }
 
@@ -258,10 +254,11 @@ void host_handler::start(std::string IP, int port){
 	if(!cl.init()){
 		return;
 	}
-	tSleep(500);
-	// Start handshake flow
+	// start handshak flow
 	cl.send_data("INITHDSK");
-	
+	std::string hdreply = cl.receive_data(512);
+	std::cout<<hdreply;
+	if(hdreply == "HDSERROR"){ return; }
 	// Start to listen
 	CommandParser(cl, positions);
 }
