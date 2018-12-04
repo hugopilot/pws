@@ -1,3 +1,10 @@
+/* Source written by Hugo Woesthuis
+ * Licensed under GPLv3
+ * 
+ */
+
+
+
 #include "host_handler.h"
 #include "motorcontrol.h"
 #include "tcp_handler.h"
@@ -13,6 +20,7 @@
 #define FILE_COUNT 2
 #define ROOTNODE_NAME "Positions"
 #define POSNODE_NAME "Position"
+#define I2C_ADDRESS 4
 using namespace rapidxml;
 void tSleep(long _milliseconds){
 	std::this_thread::sleep_for(std::chrono::milliseconds(_milliseconds));
@@ -112,7 +120,7 @@ std::vector<position> ConvertXMLtoPositions(std::string pathtofile){
 	}
 	return p;
 }
-void executemovements(position p, bool tdfb = true, int addr = 4){
+void executemovements(position p, bool tdfb = true, int addr = I2C_ADDRESS){
 	if(tdfb){
 		std::cout<<"Going from base to " << p.name << std::endl;
 		for(uint16_t i = 0; i < p.tdfb.size(); i++){
@@ -171,7 +179,7 @@ void CommandParser(tcp_client tcpc, std::vector<position> posiss){
 	bool busy = false;
 	std::string d = tcpc.receive_data(512);
 	if(d == "PAUSE")
-		MotorController::SendCommand(STOP, 4);
+		MotorController::SendCommand(STOP, I2C_ADDRESS);
 	else if(d == "NOTG"){
 		if(busy){
 			tcpc.send_data("ERRBSY");
@@ -188,13 +196,19 @@ void CommandParser(tcp_client tcpc, std::vector<position> posiss){
 		
 		// Search and find all positions
 		std::vector<position> exec = FindAllPositionsByName(posis, posiss);
+		
+		// Loop though all positions and execute them
 		for(uint16_t d = 0; d < exec.size(); d++){
 			position ps = exec.at(d);
-			executemovements(ps, true, 4);
+			executemovements(ps, true, I2C_ADDRESS);
 			tSleep(5000);
-			executemovements(ps, false, 4);
+			executemovements(ps, false, I2C_ADDRESS);
 		}
+		
+		// Client is not performing a task anymore.
 		busy = false;
+		// Send the OK response
+		tcpc.send_data("OK");
 	}
 	else if (d == "TESTALLPS"){
 		if(busy){
@@ -241,7 +255,7 @@ void host_handler::start(std::string IP, int port){
 	cl.send_data("INITHDSK");
 	std::string response = cl.receive_data(512);
 	if(response == "HSKERROR"){std::cout<<"ERROR: Server returned handshake-error\n"; return;}
-	std::cout << "Received " << response << "from server\n";
+	std::cout << "Received " << response << " from server\n";
 	
 	// Start to listen
 	CommandParser(cl, positions);
