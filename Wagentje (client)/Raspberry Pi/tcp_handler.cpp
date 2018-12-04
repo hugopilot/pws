@@ -41,7 +41,7 @@ bool tcp_client::init(){
 	}
 	
 	// set address to proper types
-	if(inet_addr(address.c_str()) == -1){
+	if(inet_addr(address.c_str()) == (unsigned)-1){
 		struct in_addr **address_list;
 		struct hostent *he;
 		
