@@ -21,6 +21,7 @@
 #define ROOTNODE_NAME "Positions"
 #define POSNODE_NAME "Position"
 #define I2C_ADDRESS 4
+#define STR_NULL ""
 using namespace rapidxml;
 void tSleep(long _milliseconds){
 	std::this_thread::sleep_for(std::chrono::milliseconds(_milliseconds));
@@ -177,7 +178,8 @@ void TestAll(std::vector<position> alps){
 // Listen to commands
 void CommandParser(tcp_client tcpc, std::vector<position> posiss){
 	bool busy = false;
-	std::string d = tcpc.receive_data(512);
+	std::string d = STR_NULL;
+	do{ d = tcpc.receive_data(512);}while(d == STR_NULL);
 	if(d == "PAUSE")
 		MotorController::SendCommand(STOP, I2C_ADDRESS);
 	else if(d == "NOTG"){
@@ -259,4 +261,8 @@ void host_handler::start(std::string IP, int port){
 	
 	// Start to listen
 	CommandParser(cl, positions);
+}
+
+void host_handler::stop(){
+	std::cout<<"stopping service...";
 }
