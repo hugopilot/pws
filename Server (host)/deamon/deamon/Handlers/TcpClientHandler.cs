@@ -15,6 +15,10 @@ namespace deamon.Handlers
 {
     class DHCPHandler : IDisposable
     {
+        private void DEBUG(string message)
+        {
+            Console.WriteLine(string.Format("[{0}] {1}", string.Format("{0} {1}", DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString()), message));
+        }
         private volatile List<DHCPClient> dHCPClients;
         private TcpListener remsrv;
         private TcpListener locsrv;
@@ -44,7 +48,7 @@ namespace deamon.Handlers
             {
                 Socket client = remsrv.AcceptSocket();
                 IPEndPoint ipaddr = client.RemoteEndPoint as IPEndPoint;
-                Console.WriteLine("Accepted an connection: " + ipaddr.Address);
+                DEBUG("Accepted an connection: " + ipaddr.Address + " on port: " + ipaddr.Port);
                 // Preform a handshake
                 byte[] data = new byte[8];
                 // Add a 3 second time out. Keeps the Thread from freezing in case something goes wrong
@@ -57,7 +61,6 @@ namespace deamon.Handlers
                 StringBuilder sb = new StringBuilder();
 
                 sb.Append(Encoding.ASCII.GetChars(data));
-                Console.WriteLine(sb.ToString());
 
                 // Connection is new. Check if the client sended a handshake command
                 if (sb.ToString() == "INITHDSK")
@@ -68,22 +71,26 @@ namespace deamon.Handlers
                 DHCPClient dHCPClient = new DHCPClient(client);
                 dHCPClient.ip = ipaddr;
                 dHCPClients.Add(dHCPClient);
-                client.Dispose();
             }
         }
         private void ConnectionManager()
         {
-            Thread.Sleep(100);
             while (true)
             {
                 for (int it = 0; it < dHCPClients.Count; it++)
                 {
                     DHCPClient cl = dHCPClients[it];
-                    if (!cl._socket.Connected)
+                    try
                     {
-                        Console.WriteLine(string.Format("{0} is dead", cl.ip.Address));
-                        dHCPClients.RemoveAt(it);
+                        if (cl._socket.Poll(1000, SelectMode.SelectRead) && cl._socket.Available == 0)
+                        {
+                            DEBUG(string.Format("{0} has disconnected", cl.ip.Address.ToString()));
+                            cl._socket.Disconnect(false);
+                            cl._socket.Dispose();
+                            dHCPClients.RemoveAt(it);
+                        }
                     }
+                    catch (NullReferenceException) { };
                 }
             }
         }
