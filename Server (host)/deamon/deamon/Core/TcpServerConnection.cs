@@ -1,17 +1,6 @@
-﻿/****************************************************************
- * This work is original work authored by Craig Baird, released *
- * under the Code Project Open Licence (CPOL) 1.02;             *
- * http://www.codeproject.com/info/cpol10.aspx                  *
- * This work is provided as is, no guarentees are made as to    *
- * suitability of this work for any specific purpose, use it at *
- * your own risk.                                               *
- * If this work is redistributed in code form this header must  *
- * be included and unchanged.                                   *
- * Any modifications made, other than by the original author,   *
- * shall be listed below.                                       *
- * Where applicable any headers added with modifications shall  *
- * also be included.                                            *
- ****************************************************************/
+﻿/* Original Work by Craig Baird, edited by Hugo Woesthuis
+ * Licensed under CPOL 
+ */
 
 using System;
 using System.Collections.Generic;
@@ -19,7 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace tcpServer
+namespace deamon.Core
 {
     public class TcpServerConnection
     {
