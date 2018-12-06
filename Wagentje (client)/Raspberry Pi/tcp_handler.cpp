@@ -6,6 +6,7 @@
 #define DEFAULT_PORT 5555
 #define DEFAULT_SOCKET -1
 #define DEFAULT_RECIEVE_SIZE 512
+#define S_NULL ""
 tcp_client::tcp_client(std::string _address){
 	socke = DEFAULT_SOCKET;
 	port = DEFAULT_PORT;
@@ -102,7 +103,7 @@ std::string tcp_client::receive_data(int size=DEFAULT_RECIEVE_SIZE){
 	// Recieve a reply from the server
 	if(recv(socke, b, sizeof(b), 0) < 0){
 		std::cerr << "recv failed to reveive data!\n";
-		return NULL;
+		return S_NULL;
 	}
 	data_received = b;
 	return data_received;
