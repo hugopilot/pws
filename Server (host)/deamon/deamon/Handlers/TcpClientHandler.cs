@@ -10,6 +10,7 @@ using System.Threading;
 using System.Net;
 using System.Net.Sockets;
 using deamon.Collections;
+using System.Linq;
 
 namespace deamon.Handlers
 {
@@ -39,7 +40,9 @@ namespace deamon.Handlers
         /// </summary>
         public DHCPHandler()
         {
+            // Server that can interact with any incoming connection
             remsrv = new TcpListener(IPAddress.Any, 2121);
+            // Local server
             locsrv = new TcpListener(IPAddress.Parse("127.0.0.1"), 8383);
         }
         private void AcceptConnections()
@@ -61,12 +64,13 @@ namespace deamon.Handlers
                 StringBuilder sb = new StringBuilder();
 
                 sb.Append(Encoding.ASCII.GetChars(data));
-
+                client.ReceiveTimeout = 429496729;
                 // Connection is new. Check if the client sended a handshake command
                 if (sb.ToString() == "INITHDSK")
                 {
                     //TODO: Authentication
                     client.Send(pcol.HANDSHAKE_REPLY(true));
+                    DEBUG(string.Format("Client {0} has been authenticated!", ipaddr.Address.ToString()));
                 }
                 DHCPClient dHCPClient = new DHCPClient(client);
                 dHCPClient.ip = ipaddr;
@@ -85,7 +89,7 @@ namespace deamon.Handlers
                         if (cl._socket.Poll(1000, SelectMode.SelectRead) && cl._socket.Available == 0)
                         {
                             DEBUG(string.Format("{0} has disconnected", cl.ip.Address.ToString()));
-                            cl._socket.Disconnect(false);
+                            //cl._socket.Disconnect(false);
                             cl._socket.Dispose();
                             dHCPClients.RemoveAt(it);
                         }
@@ -93,6 +97,55 @@ namespace deamon.Handlers
                     catch (NullReferenceException) { };
                 }
             }
+        }
+        /* NOTG(<posis>) (Use databases?)
+         * TESTALLPS(devicename)
+         * FLREBOOT(devicename)
+         */
+
+        private void CommandService()
+        {
+            while (true)
+            {
+                // One socket is accepted per command
+                Socket localclient = locsrv.AcceptSocket();
+                localclient.ReceiveTimeout = 10000;
+                DEBUG("A local client has connected!");
+                // Wait for a command to come in
+                StringBuilder SB = new StringBuilder();
+                byte[] cmdBuffer = new byte[1024];
+                try { localclient.Receive(cmdBuffer); } catch (SocketException) { DEBUG("Exception thrown: Local client probaby timed out"); }
+                SB.Append(Encoding.ASCII.GetChars(cmdBuffer));
+
+                // Split the command first into sections
+                string[] Rcmd = SB.ToString().Split('(', ')');
+                string Scmd = Rcmd[0];
+                switch (Scmd)
+                {
+                    case "NOTG":
+                        bool used = false;
+                        do
+                        {
+                            foreach (DHCPClient c in dHCPClients)
+                            {
+                                if (c._isBusy) { continue; }
+                                c._socket.Send(Encoding.ASCII.GetBytes("NOTG\0"));
+                                DEBUG("NOTG sended");
+                                byte[] tB = new byte[8];
+                                c._socket.ReceiveTimeout = 3000;
+                                try { c._socket.Receive(tB); } catch (SocketException) { /*continue;*/ }
+                                if (Encoding.ASCII.GetString(tB) == "ERRBSY") { DEBUG("Client is busy"); c._isBusy = true; continue; }
+                                c._socket.Send(Encoding.ASCII.GetBytes(Rcmd[1] + "\0"));
+                                DEBUG(string.Format("Command to {0} was sent", c.ip.Address.ToString()));
+                                used = true;
+                                break;
+                            }
+                        } while (!used);
+                        break;
+                }
+            }
+            
+
         }
         public void StartService()
         {
@@ -102,8 +155,11 @@ namespace deamon.Handlers
             locsrv.Start();
             var acceptingThread = new Thread(() => AcceptConnections());
             var connectionManager = new Thread(() => ConnectionManager());
+            var cmdService = new Thread(() => CommandService());
             acceptingThread.Start();
             connectionManager.Start();
+            cmdService.Start();
+            DEBUG("TCP services are started!");
         }
         public void Dispose()
         {
