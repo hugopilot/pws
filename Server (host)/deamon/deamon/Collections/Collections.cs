@@ -1,4 +1,8 @@
-﻿using System;
+﻿/* Code written by Hugo Woesthuis
+ * Licenced under GPLv3
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Net.Sockets;
