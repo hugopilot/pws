@@ -32,8 +32,8 @@ namespace ServerTest
         }
         static void CompileArgs(string[] args)
         {
-            int locport = 2121;
-            int remport = 8383;
+            int remport = 2121;
+            int locport = 8383;
             for(int i = 0; i < args.Length; i++)
             {
                 switch (args[i])
