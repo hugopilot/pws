@@ -20,11 +20,21 @@ namespace deamon.Handlers
         {
             Console.WriteLine(string.Format("[{0}] {1}", string.Format("{0} {1}", DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString()), message));
         }
-        private volatile List<DHCPClient> dHCPClients;
+
+        
+        // DHCP server classes
+        private volatile List<DHCPClient> dHCPClients;  // Make this volatile: should be able to be manipulated by other threads
         private TcpListener remsrv;
         private TcpListener locsrv;
-        //private List<Client> clients;
         private DHCPCollection pcol;
+
+        // Threads
+        private Thread acceptingThread;
+        private Thread connectionManager;
+        private Thread cmdService;
+        private Thread garbageService;
+
+        // Actual stuff
         /// <summary>
         /// Constructor for DHCPServer. This class fully implements the DHCP protocol
         /// </summary>
@@ -33,7 +43,7 @@ namespace deamon.Handlers
         public DHCPHandler(int remport, int locport)
         {
             remsrv = new TcpListener(IPAddress.Any, remport);
-            locsrv = new TcpListener(IPAddress.Parse("localhost"), locport);
+            locsrv = new TcpListener(IPAddress.Parse("127.0.0.1"), locport);
         }
         /// <summary>
         /// Constructor for DHCPServer. This class fully implements the DHCP protocol, uses the default settings
@@ -150,26 +160,27 @@ namespace deamon.Handlers
                 switch (Scmd)
                 {
                     case "NOTG":
-                        bool used = false;
+                        bool used = false; // This states if the current command has been sent to a client.
                         do
                         {
-                            Thread.Sleep(100);
-                            foreach (DHCPClient c in dHCPClients)
+                            Thread.Sleep(10); // Wait 10 ms because of refreshing.
+
+                            foreach (DHCPClient c in dHCPClients) // Loop though all clients
                             {
-                                if (c._isBusy) { continue; }
-                                c._socket.Send(Encoding.ASCII.GetBytes("NOTG\0"));
-                                DEBUG("NOTG sended");
-                                byte[] tB = new byte[8];
-                                c._socket.ReceiveTimeout = 3000;
-                                try { c._socket.Receive(tB); } catch (SocketException) { /*continue;*/ }
-                                if (Encoding.ASCII.GetString(tB) == "ERRBSY") { DEBUG("Client is busy"); c._isBusy = true; continue; }
-                                c._socket.Send(Encoding.ASCII.GetBytes(Rcmd[1] + "\0"));
-                                c._isBusy = true;
+                                if (c._isBusy) { continue; } // If it's busy, skip to the next one
+                                c._socket.Send(Encoding.ASCII.GetBytes("NOTG\0"));  // Send the NOTG command.
+                                DEBUG("NOTG sended"); 
+                                byte[] tB = new byte[8]; // Tiny buffer
+                                c._socket.ReceiveTimeout = 3000; // Give the client 3s to react
+                                try { c._socket.Receive(tB); } catch (SocketException) { /*Nothing*/ } 
+                                if (Encoding.ASCII.GetString(tB) == "ERRBSY") { DEBUG("Client is busy"); c._isBusy = true; continue; } // If the clients states it's busy, update and skip
+                                c._socket.Send(Encoding.ASCII.GetBytes(Rcmd[1] + "\0")); // Send positions to client
+                                c._isBusy = true; // Update busy status
                                 DEBUG(string.Format("Command to {0} was sent", c.ip.Address.ToString()));
-                                var ho = new Thread(() => BusyClient(c));
+                                var ho = new Thread(() => BusyClient(c)); // Assign a new thread that keeps track of the status of the client
                                 ho.Start();
-                                used = true;
-                                break;
+                                used = true; // Command has been used
+                                break; // Break the loop
                             }
                         } while (!used);
                         break;
@@ -208,26 +219,49 @@ namespace deamon.Handlers
             
 
         }
+
+        /// <summary>
+        /// Starts the DHCP-daemon service
+        /// </summary>
         public void StartService()
         {
             // Start the service and clear the clients list.
             dHCPClients = new List<DHCPClient>();
             remsrv.Start();
             locsrv.Start();
-            var acceptingThread = new Thread(() => AcceptConnections());
-            var connectionManager = new Thread(() => ConnectionManager());
-            var cmdService = new Thread(() => CommandService());
-            var garbageService = new Thread(() => GarbargeCollection());
+            acceptingThread = new Thread(() => AcceptConnections());
+            connectionManager = new Thread(() => ConnectionManager());
+            cmdService = new Thread(() => CommandService());
+            garbageService = new Thread(() => GarbargeCollection());
             acceptingThread.Start();
             connectionManager.Start();
             cmdService.Start();
             garbageService.Start();
-            DEBUG("TCP services started!");
+            DEBUG("Services started!");
         }
+
+        /// <summary>
+        /// Disposes all objects
+        /// </summary>
         public void Dispose()
         {
-            remsrv.Stop();
-            locsrv.Stop();
+            try
+            {
+                DEBUG("Disposing the threads...");
+                // Dispose the Threads
+                acceptingThread.Abort();
+                connectionManager.Abort();
+                cmdService.Abort();
+                garbageService.Abort();
+
+                DEBUG("Stopping TCP Servers...");
+                // Stop the TCP servers
+                remsrv.Stop();
+                locsrv.Stop();
+            }catch(Exception e) { DEBUG("ERROR while disposing: " + e.Message); Thread.Sleep(2000); Environment.Exit(1); }
+            
+
+            DEBUG("Disposing successful!");
         }
 
     }
