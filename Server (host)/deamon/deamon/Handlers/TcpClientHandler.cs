@@ -134,7 +134,7 @@ namespace deamon.Handlers
             if (recv == "OK\0\0")
                 c._isBusy = false;
         }
-        /* NOTG(<posis>) (Use databases?)
+        /* NOTG(<posis>)
          * TESTALLPS(devicename)
          * FLREBOOT(devicename)
          * DEVICELIST()
@@ -146,12 +146,12 @@ namespace deamon.Handlers
             {
                 // One socket is accepted per command
                 Socket localclient = locsrv.AcceptSocket();
-                localclient.ReceiveTimeout = 10000;
+                localclient.ReceiveTimeout = 429496729;
                 DEBUG("A local client has connected!");
                 // Wait for a command to come in
                 StringBuilder SB = new StringBuilder();
                 byte[] cmdBuffer = new byte[1024];
-                try { localclient.Receive(cmdBuffer); } catch (SocketException) { DEBUG("Exception thrown: Local client probaby timed out"); }
+                try { localclient.Receive(cmdBuffer); } catch (SocketException se) { DEBUG("Exception thrown: " + se.Message); }
                 SB.Append(Encoding.ASCII.GetChars(cmdBuffer));
 
                 // Split the command first into sections
