@@ -1,4 +1,4 @@
-﻿/* Code written by Mike Krop
+﻿/* Code written by Hugo Woesthuis
  * Licenced under GPLv3
  */
 

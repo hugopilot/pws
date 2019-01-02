@@ -1,3 +1,5 @@
+# Written by Hugo Woesthuis
+
 import smbus
 import sys
 channel = 1

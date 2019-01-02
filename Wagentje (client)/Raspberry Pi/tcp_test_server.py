@@ -1,3 +1,5 @@
+# Written by Hugo Woesthuis
+
 import socket
 import sys
 import time

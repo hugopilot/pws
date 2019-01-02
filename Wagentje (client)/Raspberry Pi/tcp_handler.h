@@ -1,4 +1,4 @@
-/* Written by Hugo Woesthuis and Mike Krop
+/* Written by Hugo Woesthuis
  * Licensed under the GPLv3 license
  */
 #ifndef TCPHANLDER_H

@@ -1,3 +1,7 @@
+/* Written by Hugo Woesthuis
+ * Licensed under GPLv3
+ */
+
 #include <iostream>
 
 #include "host_handler.h"

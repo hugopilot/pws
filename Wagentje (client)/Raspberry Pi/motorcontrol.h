@@ -1,3 +1,7 @@
+/* Written by Hugo Woesthuis
+ * Licensed under GPLv3
+ */
+
 #include <iostream>
 #ifndef MOTORCONTROLLER_H
 #define MOTORCONTROLLER_H

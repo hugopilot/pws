@@ -1,4 +1,4 @@
-/* Written by Hugo Woesthuis and Mike Krop
+/* Written by Hugo Woesthuis
  * Licensed under GPLv3, see LICENSE file for more info.
  */
 
