@@ -1,0 +1,116 @@
+body {
+  font-family: Verdana,sans-serif;
+  background-color: #000;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+}
+
+.right {
+  float: right;
+}
+
+ul {
+  list-style-type: none;
+  width: 200px;
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  float: left;
+  height: 100%;
+  position: fixed;
+  overflow: auto;
+}
+
+li a {
+  display: block;
+  color: #fff;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+li a.active {
+  background-color: #ff0080;
+}
+
+li a:hover:not(.active) {
+  background-color: #ff0060;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 1em;
+  margin-left: 200px;
+}
+
+.wrapper > div {
+  background: #ff0080;
+  color: #fff;
+  padding: 1em;
+}
+
+.wrapper > div button {
+  background-color: #000;
+  margin-top: 10px;
+  color: #fff;
+  border: 1px solid #ff0080;
+  border-radius: 10px;
+  height: auto;
+  width: auto;
+  padding: 5px;
+}
+
+.wrapper > div button:hover {
+  background-color: #fff;
+  color: #ff0080;
+  cursor: pointer;
+}
+
+.winkelwagen {
+  padding-left: 200px;
+  color: #fff;
+}
+
+button.checkout {
+  margin-left: 200px;
+}
+
+input {
+  margin-left: 200px;
+
+}
+
+main {
+  margin-left: 200px;
+}
+
+h1 {
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  margin: 0;
+  padding: 0;
+}
+
+h3 {
+  margin: 0;
+  padding: 0;
+}
+
+h4 {
+  margin: 0;
+  padding: 0;
+}
+
+h5 {
+  margin: 0;
+  padding: 0;
+}
+
+h6 {
+  margin: 0;
+  padding: 0;
+}

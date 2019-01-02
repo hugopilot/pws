@@ -1,0 +1,16 @@
+{
+  "name": "pws_distributiecentrum",
+  "version": "1.0.0",
+  "description": "A Node application to send TCP messages to a TCP server",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joep van Dijk",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "net": "^1.0.2"
+  }
+}

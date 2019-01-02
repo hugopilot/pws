@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Distributiecentrum | Winkelwagen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3pro.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/index.js"></script>
+  </head>
+  <body onload="getProducts(); countProducts(); getLocalStorage();">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a class="active" href="/winkelwagen">Winkelwagen (<span id="amountOfItems"></span>)</a></li>
+      <li><a href="/orders">Orders</a></li>
+    </ul>
+    <div id="products" class="winkelwagen"></div>
+    <form class="" action="/checkout" method="POST">
+      <input type="text" name="input" id="input" hidden>
+      <button type="submit" class="checkout">Checkout</button>
+    </form>
+  </body>
+</html>

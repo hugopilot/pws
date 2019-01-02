@@ -1,0 +1,27 @@
+<script>
+  var error = window.location.search.substr(1);
+</script>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Distributiecentrum | Orders</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3pro.css">
+    <script src="/js/index.js"></script>
+  </head>
+  <body onload="countProducts();">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/winkelwagen">Winkelwagen (<span id="amountOfItems"></span>)</a></li>
+      <li><a href="/orders">Orders</a></li>
+    </ul>
+    <main>
+      <h1>Error</h1>
+      An error occured in your order, the order was: <code id="error">No error was found</code>
+    </main>
+  </body>
+  <script>
+    removeAllProducts();
+    document.getElementById('error').innerHTML = error;
+  </script>
+</html>
